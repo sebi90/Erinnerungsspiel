@@ -25,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
     public static final int REQUEST_CODE = 1;
     public static List<Integer> numbers = new ArrayList<Integer>();
     public static int numbersPosition = 0;
+    private TextView textResult, textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +34,10 @@ public class MainActivity extends ActionBarActivity {
 
         zufallszahl = zufallsGenerator.nextInt(9) +1;
 
-        TextView textView = (TextView) findViewById(R.id.randomNumberTextView);
+        textView = (TextView) findViewById(R.id.randomNumberTextView);
         textView.setText("Bitte merken Sie sich die Zahl " + zufallszahl);
-        numbers.add(zufallszahl);
+        numbers.add(numbersPosition, zufallszahl);
+        textResult = (TextView) findViewById(R.id.textViewResult);
     }
 
     public void onClickNext(View view)
@@ -45,7 +47,6 @@ public class MainActivity extends ActionBarActivity {
         numbersPosition++;
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.MESSAGE, zufallszahl);
-
         startActivityForResult(intent, MainActivity.REQUEST_CODE);
 
     }
@@ -62,17 +63,30 @@ public class MainActivity extends ActionBarActivity {
 
             if(Integer.parseInt(message) == numbers.get(numbersPosition))
             {
-                TextView textResult = (TextView) findViewById(R.id.textViewResult);
                 textResult.setText("Richtig");
             }
             else
             {
-                TextView textResult = (TextView) findViewById(R.id.textViewResult);
+
                 textResult.setText("Leider Falsch");
-                //finish();
             }
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("DISPLAY_TEXT_RESULT", textResult.getText().toString());
+        outState.putString("DISPLAY_TEXT", textView.getText().toString());
+
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        textResult.setText(savedInstanceState.getString("DISPLAY_TEXT_RESULT"));
+        textView.setText(savedInstanceState.getString("DISPLAY_TEXT"));
+    }
+
     public void onButtonClick(View view)
     {
         if(numbersPosition != 0) {
